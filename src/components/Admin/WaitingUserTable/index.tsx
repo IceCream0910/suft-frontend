@@ -83,8 +83,8 @@ const WaitingUserTable: React.FC = () => {
 
             axios
                 .put(
-                    `${config.ENDPOINT}/waiting/allow`,
-                    { email: key },
+                    `${config.ENDPOINT}/waiting/allow/${key}`,
+                    {},
                     {
                         headers: {
                             Authorization: `JWT ${localStorage.getItem('token')}`
@@ -124,8 +124,8 @@ const WaitingUserTable: React.FC = () => {
             if (!selected[key]) return;
             axios
                 .put(
-                    `${config.ENDPOINT}/waiting/deny`,
-                    { email: key },
+                    `${config.ENDPOINT}/waiting/deny/${key}`,
+                    {},
                     {
                         headers: {
                             Authorization: `JWT ${localStorage.getItem('token')}`
@@ -159,14 +159,15 @@ const WaitingUserTable: React.FC = () => {
                         return (
                             <CheckboxWrapStyle>
                                 <input
-                                    type="checkbox"
-                                    checked={check.selectAll === 1}
-                                    ref={(input) => {
+                                  type="checkbox"
+                                  checked={check.selectAll === 1}
+                                  ref={(input) => {
                                         if (input) {
+                                            // eslint-disable-next-line
                                             input.indeterminate = check.selectAll === 2;
                                         }
                                     }}
-                                    onChange={() => rowManager.toggleAllRow(data, 'email')}
+                                  onChange={() => rowManager.toggleAllRow(data, 'email')}
                                 />
                             </CheckboxWrapStyle>
                         );
