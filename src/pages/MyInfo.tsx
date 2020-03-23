@@ -14,6 +14,8 @@ import SquareButton from '../atomics/SquareButton';
 import { useProfile } from '../hooks/useProfile';
 import Login from '../components/Login';
 import config from '../config';
+import serverErrorHandler from '../utils/ServerErrorHandler';
+import Error from '../error/Error';
 
 const BodyStyle = styled.div`
     margin: 32px auto;
@@ -29,14 +31,14 @@ const MyInfo: React.FC<RouteComponentProps> = ({ history }) => {
     const [grade, setGrade] = useState('1');
 
     useEffect(() => {
-        if (profile === undefined) return;
+        if (profile.data === undefined) return;
 
-        setEmail(profile!.email);
-        setName(profile!.name);
-        setGrade(profile!.grade);
+        setEmail(profile.data.email);
+        setName(profile.data.name);
+        setGrade(profile.data.grade);
     }, [profile]);
 
-    if (profile !== undefined && !profile.success) {
+    if (profile.data === undefined || !profile.success) {
         return (
             <DefaultLayout>
                 <CenterContainer>
@@ -60,7 +62,7 @@ const MyInfo: React.FC<RouteComponentProps> = ({ history }) => {
         } else {
             axios
                 .put(
-                    `${config.ENDPOINT}/user/${profile.email}`,
+                    `${config.ENDPOINT}/user/${profile.data!.email}`,
                     {
                         nowPassword: password,
                         newPassword: newPassword === '' ? undefined : newPassword,
@@ -72,18 +74,24 @@ const MyInfo: React.FC<RouteComponentProps> = ({ history }) => {
                         }
                     }
                 )
-                .then((data) => {
-                    if (!data.data.success) {
-                        alert(data.data.message);
-                    } else {
-                        alert('내 정보가 수정되었습니다!');
-                        history.push('/');
-                        window.location.reload();
-                    }
+                .then(() => {
+                    alert('내 정보가 수정되었습니다!');
+                    history.push('/');
+                    window.location.reload();
                 })
                 .catch((err) => {
-                    alert('내 정보 수정 중 서버 오류가 발생하였습니다.');
-                    console.log(err);
+                    const errorCode = err.response.data.code;
+                    if (errorCode === Error.PW_NOT_MATCH) {
+                        alert('비밀번호가 올바르지 않습니다.');
+                        return;
+                    }
+
+                    if (errorCode === Error.SERVER_ERROR) {
+                        serverErrorHandler(err);
+                        return;
+                    }
+
+                    alert(err.response.data.message);
                 });
         }
     };
