@@ -33,6 +33,9 @@
 ## 기여하기
 수프트 프로젝트에 기여하고 싶으신 분은 [이곳(Pull requests)](https://github.com/swsuft/suft-frontend/pulls)에서 하실 수 있습니다.
 
+### 기여자
+- 대멀쌤
+
 ## 버그 제보 및 건의
 버그를 발견했거나 기타 건의를 하고 싶으신 분은 [이곳(Issues)](https://github.com/swsuft/suft-frontend/issues)에서 하실 수 있습니다.
 
